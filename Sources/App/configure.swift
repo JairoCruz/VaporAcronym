@@ -6,18 +6,17 @@ import Vapor
 public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    app.databases.use(.postgres(hostname: "localhost", username: "alb", password: "jairo", database: "alb"), as: .psql)
-    //app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)
-    
 
-    if let databaseURL = Environment.get("DATABASE_URL"), var postgresConfig = PostgresConfiguration(url: databaseURL) {
-    postgresConfig.tlsConfiguration = .forClient(certificateVerification: .none)
-    app.databases.use(.postgres(
-        configuration: postgresConfig
+    //app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)
+    app.databases.use(.postgres(hostname: "localhost", username: "alb", password: "jairo", database: "alb"), as: .psql)
+
+    if let databaseURL = Environment.get("DATABASE_URL") {
+    app.databases.use(try .postgres(
+        url: databaseURL
     ), as: .psql)
-    } else {
-    
-    }
+} else {
+    // ...
+}
 
 
     //app.migrations.add(CreateTodo())
