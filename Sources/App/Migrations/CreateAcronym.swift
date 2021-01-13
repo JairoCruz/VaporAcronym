@@ -1,5 +1,5 @@
 import Vapor
-import FluentSQLiteDriver
+import Fluent
 
 struct CreateAcronym: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
