@@ -8,14 +8,14 @@ public func configure(_ app: Application) throws {
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
     //app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)
-    app.databases.use(.postgres(hostname: "localhost", username: "alb", password: "jairo", database: "alb"), as: .psql)
+    
 
     if let databaseURL = Environment.get("DATABASE_URL") {
     app.databases.use(try .postgres(
         url: databaseURL
     ), as: .psql)
 } else {
-    // ...
+    app.databases.use(.postgres(hostname: "localhost", username: "alb", password: "jairo", database: "alb"), as: .psql)
 }
 
 
