@@ -12,10 +12,10 @@ public func configure(_ app: Application) throws {
 
     if let databaseURL = Environment.get("DATABASE_URL") {
         
-    app.databases.use(.postgres(url: databaseURL), as: .psql)
+    app.databases.use(try .postgres(url: databaseURL), as: .psql)
     print("paso aqui")
 } else {
-    print("paso aqui2")
+    print("paso aqui")
     app.databases.use(.postgres(hostname: "localhost", username: "alb", password: "jairo", database: "alb"), as: .psql)
 }
 
