@@ -42,4 +42,16 @@ func routes(_ app: Application) throws {
          }
     }
 
+
+    // Delete
+    app.delete("api", "acronymus", ":id") { req -> EventLoopFuture<HTTPStatus> in 
+        guard let id = req.parameters.get("id", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        return Acronym.find(id, on: req.db)
+        .unwrap(or: Abort(.notFound))
+        .flatMap { $0.delete(on: req.db) }
+        .map { .ok }
+    }
+
 }
