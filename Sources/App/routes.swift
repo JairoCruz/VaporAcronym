@@ -54,4 +54,13 @@ func routes(_ app: Application) throws {
         .map { .ok }
     }
 
+    // Search
+    app.get("api","acronymus","search") { req -> EventLoopFuture<[Acronym]> in 
+        guard let searchTerm = req.query[String.self, at: "term"] else {
+            throw Abort(.badRequest)
+        }
+
+        return Acronym.query(on: req.db).filter(\.$short == searchTerm).sort(\.$long).all()
+    } 
+
 }
