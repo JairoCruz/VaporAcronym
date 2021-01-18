@@ -6,9 +6,10 @@ func routes(_ app: Application) throws {
         return "It works!"
     }
 
-    app.get("hello") { req -> String in
-        return "Hello, world!"
-    }
+    // Register Acronym Routes
+    try app.register(collection: AcronymController())
+
+    /**
 
     // Read
     app.get("api","acronymus") { req in 
@@ -62,5 +63,5 @@ func routes(_ app: Application) throws {
 
         return Acronym.query(on: req.db).filter(\.$short == searchTerm).sort(\.$long).all()
     } 
-
+  **/
 }
