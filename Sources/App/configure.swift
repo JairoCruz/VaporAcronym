@@ -22,6 +22,9 @@ public func configure(_ app: Application) throws {
 
     //app.migrations.add(CreateTodo())
     app.migrations.add(CreateAcronym())
+    app.migrations.add(CreateUser())
+    app.migrations.add(AddRelationAcronym())
+    
 
     // register routes
     try routes(app)

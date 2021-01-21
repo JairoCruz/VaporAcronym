@@ -1,6 +1,13 @@
 import Vapor
 import Fluent
 
+
+struct data: Content {
+    var short: String
+    var long: String
+    var user: UUID
+}
+
 struct AcronymController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
 
@@ -18,6 +25,7 @@ struct AcronymController: RouteCollection {
         acronym.get(use: show)
         acronym.put(use: update)
         acronym.delete(use: delete)
+        acronym.get("user", use: getUser)
        }
 
 
@@ -34,8 +42,10 @@ struct AcronymController: RouteCollection {
 
     // Create
     func create(req: Request) throws -> EventLoopFuture<Acronym> {
+        
         let acronym = try req.content.decode(Acronym.self)
         return acronym.create(on: req.db).map { acronym }
+        
     }
 
     // Show
@@ -84,4 +94,22 @@ struct AcronymController: RouteCollection {
     }
     return Acronym.query(on: req.db).filter(\.$short == searchTerm).sort(\.$long).all()
    }
+
+    // Get User
+    /*func getUser(_ req: Request) throws -> EventLoopFuture<[Acronym]> {
+        guard let id = req.parameters.get("id", as: UUID.self) else {
+            throw Abort(.internalServerError)
+        }
+        return Acronym.query(on: req.db).with(\.$user).filter(\.$id == id).all()
+    }*/
+    func getUser(_ req: Request) throws -> EventLoopFuture<User> {
+        guard let id = req.parameters.get("id", as: UUID.self) else {
+            throw Abort(.internalServerError)
+        }
+        return Acronym.find(id, on: req.db)
+        .unwrap(or: Abort(.notFound))
+        .flatMap { acronym in 
+            acronym.$user.get(on: req.db)
+        }
+    }
 }

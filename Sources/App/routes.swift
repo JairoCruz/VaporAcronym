@@ -8,6 +8,9 @@ func routes(_ app: Application) throws {
 
     // Register Acronym Routes
     try app.register(collection: AcronymController())
+    
+    // Register User Routes
+    try app.register(collection: UserController())
 
     /**
 
