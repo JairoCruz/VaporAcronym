@@ -12,6 +12,9 @@ func routes(_ app: Application) throws {
     // Register User Routes
     try app.register(collection: UserController())
 
+    // Register Category Routes
+    try app.register(collection: CategoriesController())
+
     /**
 
     // Read

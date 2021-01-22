@@ -17,6 +17,9 @@ struct AcronymController: RouteCollection {
        
        acronymRoutes.get(use: getAll)
        acronymRoutes.post(use: create)
+       acronymRoutes.post(":acronymID","categories",":categoryID", use: addCategories)
+       //acronymRoutes.get(":acronymID", "categories", use: getCategories)
+       
 
        acronymRoutes.get("search", use: searchAcronym)
 
@@ -26,6 +29,8 @@ struct AcronymController: RouteCollection {
         acronym.put(use: update)
         acronym.delete(use: delete)
         acronym.get("user", use: getUser)
+        acronym.get("categories", use: getCategories)
+        acronym.delete("categories",":categoryID", use: removeCategories)
        }
 
 
@@ -112,4 +117,39 @@ struct AcronymController: RouteCollection {
             acronym.$user.get(on: req.db)
         }
     }
+
+
+    func addCategories(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        
+        let acronymQuery = Acronym.find(req.parameters.get("acronymID"), on: req.db).unwrap(or: Abort(.notFound))
+        
+        let categoryQuery = Category.find(req.parameters.get("categoryID"), on: req.db).unwrap(or: Abort(.notFound))
+        //print("value: \(acronymQuery) + \(categoryQuery)")
+        return acronymQuery.and(categoryQuery)
+        .flatMap { acronym, category in 
+            acronym.$categories
+            .attach(category, on: req.db)
+            .transform(to: .created)
+        }
+
+    }
+
+
+    func getCategories(_ req: Request) throws -> EventLoopFuture<[Category]> {
+        Acronym.find(req.parameters.get("id"), on: req.db)
+        .unwrap(or: Abort(.notFound))
+        .flatMap { acronym in 
+            acronym.$categories.query(on: req.db).all()
+        }
+    }
+
+    func removeCategories(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        let acronymQuery = Acronym.find(req.parameters.get("id"), on: req.db).unwrap(or: Abort(.notFound))
+        let categoryQuery = Category.find(req.parameters.get("categoryID"), on: req.db).unwrap(or: Abort(.notFound))
+        return acronymQuery.and(categoryQuery)
+        .flatMap { acronym, category in 
+            acronym.$categories.detach(category, on: req.db).transform(to: .noContent)
+        }
+    }
+
 }

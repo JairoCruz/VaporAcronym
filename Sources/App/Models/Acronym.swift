@@ -25,6 +25,10 @@ final class Acronym: Model, Content {
     @Parent(key: "user_id")
     var user: User
 
+    // Siblings relation
+    @Siblings(through: AcronymCategoryPivot.self, from: \.$acronym, to: \.$category)
+    public var categories: [Category]
+
     // Greates a new, empty acronym
     init() { }
 

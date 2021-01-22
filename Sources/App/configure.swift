@@ -24,6 +24,8 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateAcronym())
     app.migrations.add(CreateUser())
     app.migrations.add(AddRelationAcronym())
+    app.migrations.add(CreateCategory())
+    app.migrations.add(CreateAcronymCategoryPivot())
     
 
     // register routes
