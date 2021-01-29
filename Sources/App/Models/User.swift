@@ -15,6 +15,9 @@ final class User: Model, Content {
     @Field(key: "username")
     var username: String
 
+    @Field(key: "password")
+    var password: String
+
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
 
@@ -27,9 +30,43 @@ final class User: Model, Content {
 
     init() { }
 
-    init(name: String, username: String) {
+    init(name: String, username: String, password: String) {
         self.name = name
         self.username = username
+        self.password = password
     }
 
+    // Inner Class
+    final class Public: Codable {
+        var id: UUID?
+        var name: String
+        var username: String
+
+        init(id: UUID?, name: String, username: String) {
+            self.id = id
+            self.name = name
+            self.username = username
+        }
+    }
+
+}
+
+extension User.Public: Content { }
+
+extension User {
+
+    func convertToPublic() -> User.Public {
+        return User.Public(id: id, name: name, username: username)
+    }
+    
+}
+
+extension EventLoopFuture where T: User {
+
+    func convertToPublic() -> EventLoopFuture<User.Public> {
+        return self.map(to: User.Public.self) { user in
+            return user.convertToPublic()
+        }
+    }
+    
 }
