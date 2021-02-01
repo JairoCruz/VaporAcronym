@@ -2,6 +2,15 @@ import Vapor
 import Fluent
 
 final class User: Model, Content {
+
+    struct UserPublic: Content {
+    var id: UUID
+    var name: String
+    var username: String
+    var created_at: Date?
+    var updated_at: Date?
+}
+
     // Name of the table or collection.
 
     static let schema = "users"
@@ -51,22 +60,16 @@ final class User: Model, Content {
 
 }
 
-extension User.Public: Content { }
-
 extension User {
 
-    func convertToPublic() -> User.Public {
-        return User.Public(id: id, name: name, username: username)
+    func convertToPublic() throws -> UserPublic {
+        return UserPublic(id: try requireID(), 
+        name: name, 
+        username: username,
+        created_at: createdAt,
+        updated_at: updatedAt
+        )
     }
     
 }
 
-extension EventLoopFuture where T: User {
-
-    func convertToPublic() -> EventLoopFuture<User.Public> {
-        return self.map(to: User.Public.self) { user in
-            return user.convertToPublic()
-        }
-    }
-    
-}

@@ -29,10 +29,12 @@ struct UserController: RouteCollection {
     }
 
     // Create
-    func create(req: Request) throws -> EventLoopFuture<User.Public> {
+    func create(req: Request) throws -> EventLoopFuture<User.UserPublic> {
         let user = try req.content.decode(User.self)
         user.password = try Bcrypt.hash(user.password)
-        return user.create(on: req.db).convertToPublic()
+        return user.create(on: req.db).flatMapThrowing {
+            try user.convertToPublic()
+        }
         //return user.create(on: req.db).map { user }
     }
 
